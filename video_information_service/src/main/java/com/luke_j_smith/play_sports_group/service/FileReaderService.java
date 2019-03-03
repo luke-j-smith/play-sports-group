@@ -16,10 +16,18 @@ public interface FileReaderService {
     public File getFileFromResources(String fileInResources);
 
     /**
-     * Get the contents of a file on a line by line basis.
+     * Get the contents of a file on a line by line basis given a File.
      *
      * @param file
      * @return each line of the file as a string
      */
     public List<String> getFileContentsLineByLine(File file);
+
+    /**
+     * Get the contents of a file on a line by line basis given a location in resources.
+     *
+     * @param fileInResources
+     * @return each line of the file as a string
+     */
+    public List<String> getFileContentsLineByLine(String fileInResources);
 }

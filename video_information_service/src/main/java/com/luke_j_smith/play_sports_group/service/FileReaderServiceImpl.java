@@ -51,4 +51,13 @@ public class FileReaderServiceImpl implements FileReaderService {
 
         return fileContents;
     }
+
+    @Override
+    public List<String> getFileContentsLineByLine(String fileInResources) {
+        logger.info("Getting contents of file.");
+
+        File file = getFileFromResources(fileInResources);
+
+        return getFileContentsLineByLine(file);
+    }
 }
