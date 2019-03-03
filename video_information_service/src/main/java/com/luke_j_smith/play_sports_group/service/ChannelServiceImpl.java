@@ -23,7 +23,7 @@ public class ChannelServiceImpl implements ChannelService {
     private StringManipulationService stringManipulationService;
 
     @Override
-    public void saveChannel(String channelName) {
+    public void saveChannel(final String channelName) {
         logger.info("Saving channel with name: [{}].", channelName);
 
         Channel channel = new Channel();
