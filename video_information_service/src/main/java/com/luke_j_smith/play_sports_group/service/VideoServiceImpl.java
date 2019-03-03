@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class VideoServiceImpl implements VideoService {
@@ -31,5 +33,17 @@ public class VideoServiceImpl implements VideoService {
         video.setDate(date);
 
         videoRepository.save(video);
+    }
+
+    @Override
+    public List<Video> getAllVideos() {
+        logger.info("Getting all videos.");
+
+        // We want to return a List<Video>, but findAll() returns Iterable<Video>.
+        List<Video> allVideos = new ArrayList<>();
+        // So we use a lambda expression to add each video to our list.
+        videoRepository.findAll().forEach(allVideos::add);
+
+        return allVideos;
     }
 }
