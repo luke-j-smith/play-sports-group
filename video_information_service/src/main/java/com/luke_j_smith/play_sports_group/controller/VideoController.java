@@ -21,6 +21,10 @@ public class VideoController {
 
     private static final String JSON_RESPONSE_HEADER = "application/json; charset=UTF-8";
 
+    private static final String DELETE_SUCCESSFUL_MESSAGE = "Video successfully deleted.";
+
+    private static final String DELETE_UNSUCCESSFUL_MESSAGE = "Unable to delete video with for the ID provided.";
+
     @Autowired
     VideoService videoService;
 
@@ -43,7 +47,7 @@ public class VideoController {
 
     @RequestMapping(value = "view", method = RequestMethod.GET)
     public ResponseEntity<Video> getSavedVideo(@RequestParam("id") Integer id) {
-        logger.info("GET request to retrieve all videos save in the database.");
+        logger.info("GET request to retrieve video with ID: [{}].", id);
 
         Video video = videoService.getVideo(id);
 
@@ -56,5 +60,18 @@ public class VideoController {
         headers.add(HttpHeaders.CONTENT_TYPE, JSON_RESPONSE_HEADER);
 
         return ResponseEntity.status(HttpStatus.OK).headers(headers).body(video);
+    }
+
+    @RequestMapping(value = "delete", method = RequestMethod.DELETE)
+    public ResponseEntity<String> deleteVideo(@RequestParam("id") Integer id) {
+        logger.info("DELETE request to delete video with id: [{}].", id);
+
+        Boolean deleteSuccessful = videoService.deleteVideo(id);
+
+        if (deleteSuccessful) {
+            return ResponseEntity.status(HttpStatus.OK).body(DELETE_SUCCESSFUL_MESSAGE);
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(DELETE_UNSUCCESSFUL_MESSAGE);
     }
 }

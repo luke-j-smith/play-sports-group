@@ -30,4 +30,12 @@ public interface VideoService {
      * @return the corresponding video
      */
     public Video getVideo(final Integer id);
+
+    /**
+     * Delete - delete a video from the database given an ID.
+     *
+     * @param id
+     * @return whether the delete was successful
+     */
+    public Boolean deleteVideo(final Integer id);
 }
