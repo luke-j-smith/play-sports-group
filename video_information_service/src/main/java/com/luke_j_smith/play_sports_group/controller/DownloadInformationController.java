@@ -9,15 +9,18 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+/**
+ * Download Information Controller - handles download requests.
+ */
 @RestController
-@RequestMapping("/")
+@RequestMapping("/download-information")
 public class DownloadInformationController {
     private Logger logger = LoggerFactory.getLogger(DownloadInformationController.class);
 
     @Autowired
     DownloadInformationService downloadInformationService;
 
-    @RequestMapping(value = "download-video-information", method = RequestMethod.GET)
+    @RequestMapping(value = "video", method = RequestMethod.GET)
     public HttpStatus downloadVideoInformation() {
         logger.info("GET request to download all video information.");
 
