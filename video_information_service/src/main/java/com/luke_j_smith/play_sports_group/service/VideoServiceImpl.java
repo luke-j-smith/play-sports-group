@@ -64,4 +64,18 @@ public class VideoServiceImpl implements VideoService {
         // If the video for the specified ID doesn't exist, return null.
         return videoRepository.findById(id).orElse(null);
     }
+
+    @Override
+    public Boolean deleteVideo(Integer id) {
+        logger.info("Deleting video with ID: [{}].", id);
+
+        if (id == null || id < 0) {
+            logger.info("Invalid ID provided, returning null.");
+            return false;
+        }
+
+        videoRepository.deleteById(id);
+
+        return true;
+    }
 }
