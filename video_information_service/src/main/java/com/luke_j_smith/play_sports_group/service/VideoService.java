@@ -22,4 +22,12 @@ public interface VideoService {
      * @return a list of all videos in the database
      */
     public List<Video> getAllVideos();
+
+    /**
+     * Get a video given an ID, where the id is the video's ID in the database.
+     *
+     * @param id
+     * @return the corresponding video
+     */
+    public Video getVideo(final Integer id);
 }
