@@ -21,4 +21,13 @@ public interface StringManipulationService {
      * @return a single string with '|' separating the input strings
      */
     public String joinStringsWithOr(final List<String> strings);
+
+    /**
+     * Ensures that a string does not exceed a certain length.
+     *
+     * @param string
+     * @param maxLength
+     * @return a string that is guaranteed to be less than a given length
+     */
+    public String truncateString(final String string, final int maxLength);
 }
