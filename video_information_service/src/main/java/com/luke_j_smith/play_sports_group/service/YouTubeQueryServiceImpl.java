@@ -9,6 +9,7 @@ import com.google.api.services.youtube.model.SearchResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.api.services.youtube.YouTube;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import com.google.api.services.youtube.model.ChannelListResponse;
 import java.io.IOException;
@@ -22,9 +23,11 @@ import java.util.List;
 public class YouTubeQueryServiceImpl implements YouTubeQueryService {
     Logger logger = LoggerFactory.getLogger(YouTubeQueryServiceImpl.class);
 
-    private static final String APPLICATION_NAME = "video-information-application";
+    @Value("${application.name}")
+    private String applicationName;
 
-    private static final String API_KEY = "AIzaSyAsmKbjsSAXARfIZ9XO0RmvU4iLMnU3dCc";
+    @Value("${youtube.api.key}")
+    private String youTubeApiKey;
 
     private static final String QUERY_PART_ID = "id";
 
@@ -112,7 +115,7 @@ public class YouTubeQueryServiceImpl implements YouTubeQueryService {
 
         return new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), new HttpRequestInitializer() {
             public void initialize(HttpRequest request) throws IOException {}
-        }).setApplicationName(APPLICATION_NAME).build();
+        }).setApplicationName(applicationName).build();
     }
 
     /**
@@ -128,7 +131,7 @@ public class YouTubeQueryServiceImpl implements YouTubeQueryService {
         // We are only interested in the channel ID, so can ignore any other information.
         YouTube.Channels.List channelsListRequest = youTube.channels().list(QUERY_PART_ID);
         channelsListRequest.setForUsername(channelName);
-        channelsListRequest.setKey(API_KEY);
+        channelsListRequest.setKey(youTubeApiKey);
 
         ChannelListResponse response = channelsListRequest.execute();
 
@@ -162,7 +165,7 @@ public class YouTubeQueryServiceImpl implements YouTubeQueryService {
         searchListRequest.setQ(searchTerm);
         searchListRequest.setType(type);
         searchListRequest.setFields(fields);
-        searchListRequest.setKey(API_KEY);
+        searchListRequest.setKey(youTubeApiKey);
 
         SearchListResponse response = searchListRequest.execute();
 

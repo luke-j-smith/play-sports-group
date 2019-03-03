@@ -4,7 +4,9 @@ import com.google.api.services.youtube.model.SearchResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.PropertySource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,9 +26,11 @@ public class DownloadInformationServiceImpl implements DownloadInformationServic
     @Autowired
     StringManipulationService stringManipulationService;
 
-    private static final String CHANNELS_FILE = "search-properties/channel_list";
+    @Value("${channel_list.file.location}")
+    private String channelsFile;
 
-    private static final String SEARCH_FILTER_FILE = "search-properties/search_filter";
+    @Value("${search_filter.file.location}")
+    private String searchFilterFile;
 
     @Override
     public boolean downloadVideoInformation() {
@@ -61,7 +65,7 @@ public class DownloadInformationServiceImpl implements DownloadInformationServic
     private List<String> getChannelNames() {
         logger.info("Getting the list of channel names to search through.");
 
-        List<String> channelNames = fileReaderService.getFileContentsLineByLine(CHANNELS_FILE);
+        List<String> channelNames = fileReaderService.getFileContentsLineByLine(channelsFile);
 
         return stringManipulationService.getListOfStringsInLowerCase(channelNames);
     }
@@ -75,7 +79,7 @@ public class DownloadInformationServiceImpl implements DownloadInformationServic
     private String getSearchTerm() {
         logger.info("Getting the search terms specified in the file.");
 
-        List<String> searchTerms = fileReaderService.getFileContentsLineByLine(SEARCH_FILTER_FILE);
+        List<String> searchTerms = fileReaderService.getFileContentsLineByLine(searchFilterFile);
 
         return stringManipulationService.joinStringsWithOr(searchTerms);
     }
