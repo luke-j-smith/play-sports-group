@@ -1,10 +1,7 @@
 package com.luke_j_smith.play_sports_group.service;
 
 import com.google.api.services.youtube.model.SearchResult;
-import com.luke_j_smith.play_sports_group.dao.ChannelRepository;
-import com.luke_j_smith.play_sports_group.dao.VideoRepository;
-import com.luke_j_smith.play_sports_group.model.Channel;
-import com.luke_j_smith.play_sports_group.model.Video;
+import com.google.api.services.youtube.model.SearchResultSnippet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +17,6 @@ import java.util.List;
 public class DownloadInformationServiceImpl implements DownloadInformationService {
     private Logger logger = LoggerFactory.getLogger(FileReaderServiceImpl.class);
 
-    private static final int MAX_CHANNEL_TITLE_LENGTH = 45;
-
-    private static final int MAX_VIDEO_TITLE_LENGTH = 100;
-
     @Autowired
     private YouTubeQueryService youTubeQueryService;
 
@@ -34,10 +27,10 @@ public class DownloadInformationServiceImpl implements DownloadInformationServic
     private StringManipulationService stringManipulationService;
 
     @Autowired
-    private ChannelRepository channelRepository;
+    private ChannelService channelService;
 
     @Autowired
-    private VideoRepository videoRepository;
+    private VideoService videoService;
 
     @Value("${channel_list.file.location}")
     private String channelsFile;
@@ -60,7 +53,7 @@ public class DownloadInformationServiceImpl implements DownloadInformationServic
         // Using the channel IDs and the combined search term, we find the matching videos.
         List<SearchResult> searchResults = getVideoSearchResultList(channelIds, searchTerm);
         // Finally we save that information to the database.
-        saveVideoInformation(searchResults);
+        saveAllVideoInformation(searchResults);
 
         return true;
     }
@@ -87,11 +80,7 @@ public class DownloadInformationServiceImpl implements DownloadInformationServic
         logger.info("Saving the channel information.");
 
         for (String channelName : channelNames) {
-            Channel channel = new Channel();
-
-            channel.setChannelName(stringManipulationService.truncateString(channelName, MAX_CHANNEL_TITLE_LENGTH));
-
-            channelRepository.save(channel);
+            channelService.saveChannel(channelName);
         }
     }
 
@@ -144,19 +133,12 @@ public class DownloadInformationServiceImpl implements DownloadInformationServic
      *
      * @param videoSearchResults
      */
-    private void saveVideoInformation(final List<SearchResult> videoSearchResults) {
+    private void saveAllVideoInformation(final List<SearchResult> videoSearchResults) {
         logger.info("Saving the video search results.");
 
         for (SearchResult videoSearchResult : videoSearchResults) {
-            Video video = new Video();
-
-            // Ensure that the title isn't over the maximum length.
-            String videoTitle = stringManipulationService.truncateString(videoSearchResult.getSnippet().getTitle(),
-                    MAX_VIDEO_TITLE_LENGTH);
-            video.setTitle(videoTitle);
-            video.setDate(videoSearchResult.getSnippet().getPublishedAt());
-
-            videoRepository.save(video);
+            SearchResultSnippet videoSnippet = videoSearchResult.getSnippet();
+            videoService.saveVideo(videoSnippet.getTitle(), videoSnippet.getPublishedAt());
         }
     }
 }
