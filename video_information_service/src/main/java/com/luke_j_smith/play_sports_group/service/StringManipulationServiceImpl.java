@@ -38,4 +38,14 @@ public class StringManipulationServiceImpl implements StringManipulationService 
 
         return stringBuilder.toString();
     }
+
+    @Override
+    public String truncateString(final String string, final int maxLength) {
+        if (string == null || string.length() <= maxLength) {
+            return string;
+        }
+
+        // If the string is over the maximum length, only return the first part.
+        return string.substring(0, maxLength - 1);
+    }
 }

@@ -1,12 +1,15 @@
 package com.luke_j_smith.play_sports_group.service;
 
 import com.google.api.services.youtube.model.SearchResult;
+import com.luke_j_smith.play_sports_group.dao.ChannelRepository;
+import com.luke_j_smith.play_sports_group.dao.VideoRepository;
+import com.luke_j_smith.play_sports_group.model.Channel;
+import com.luke_j_smith.play_sports_group.model.Video;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.context.annotation.PropertySource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,14 +20,24 @@ import java.util.List;
 public class DownloadInformationServiceImpl implements DownloadInformationService {
     private Logger logger = LoggerFactory.getLogger(FileReaderServiceImpl.class);
 
-    @Autowired
-    YouTubeQueryService youTubeQueryService;
+    private static final int MAX_CHANNEL_TITLE_LENGTH = 45;
+
+    private static final int MAX_VIDEO_TITLE_LENGTH = 100;
 
     @Autowired
-    FileReaderService fileReaderService;
+    private YouTubeQueryService youTubeQueryService;
 
     @Autowired
-    StringManipulationService stringManipulationService;
+    private FileReaderService fileReaderService;
+
+    @Autowired
+    private StringManipulationService stringManipulationService;
+
+    @Autowired
+    private ChannelRepository channelRepository;
+
+    @Autowired
+    private VideoRepository videoRepository;
 
     @Value("${channel_list.file.location}")
     private String channelsFile;
@@ -34,27 +47,22 @@ public class DownloadInformationServiceImpl implements DownloadInformationServic
 
     @Override
     public boolean downloadVideoInformation() {
+        logger.info("Downloading video information.");
+
+        // First we get the channel names, ...
+        List<String> channelNames = getChannelNames();
+        // Save that information the database, ...
+        saveChannelInformation(channelNames);
+        // and and query the YouTube API to find their IDs.
+        List<String> channelIds = getChannelIds(channelNames);
+        // Then we combine all our search terms, so they can be used in a single query.
         String searchTerm = getSearchTerm();
-        List<String> channelIds = getChannelIds();
-        List<SearchResult> searchResults = new ArrayList<>();
-        for (String id : channelIds) {
-            logger.info("Channel ID: [{}]", id);
-            searchResults.addAll(youTubeQueryService.getVideoSearchResults(id, searchTerm));
-        }
-        logger.info("Search Results: [{}]", searchResults);
+        // Using the channel IDs and the combined search term, we find the matching videos.
+        List<SearchResult> searchResults = getVideoSearchResultList(channelIds, searchTerm);
+        // Finally we save that information to the database.
+        saveVideoInformation(searchResults);
 
         return true;
-    }
-
-    /**
-     * Gets the channel IDs to be used when searching for videos.
-     *
-     * @return a list of channel IDs
-     */
-    private List<String> getChannelIds() {
-        logger.info("Getting the channel IDs.");
-
-        return youTubeQueryService.getChannelIds(getChannelNames());
     }
 
     /**
@@ -71,6 +79,35 @@ public class DownloadInformationServiceImpl implements DownloadInformationServic
     }
 
     /**
+     * Save all of the channel information to the database.
+     *
+     * @param channelNames
+     */
+    private void saveChannelInformation(final List<String> channelNames) {
+        logger.info("Saving the channel information.");
+
+        for (String channelName : channelNames) {
+            Channel channel = new Channel();
+
+            channel.setChannelName(stringManipulationService.truncateString(channelName, MAX_CHANNEL_TITLE_LENGTH));
+
+            channelRepository.save(channel);
+        }
+    }
+
+    /**
+     * Gets the channel IDs to be used when searching for videos.
+     *
+     * @param channelNames
+     * @return a list of channel IDs
+     */
+    private List<String> getChannelIds(final List<String> channelNames) {
+        logger.info("Getting the channel IDs.");
+
+        return youTubeQueryService.getChannelIds(channelNames);
+    }
+
+    /**
      * Rather than searching for videos matching each term individually, we create a single search term that joins all
      * of the terms together in the format: 'luke smith|cycling|road'.
      *
@@ -82,5 +119,44 @@ public class DownloadInformationServiceImpl implements DownloadInformationServic
         List<String> searchTerms = fileReaderService.getFileContentsLineByLine(searchFilterFile);
 
         return stringManipulationService.joinStringsWithOr(searchTerms);
+    }
+
+    /**
+     * Given all the channel IDs we are interested in and the search term, get all the matching results.
+     *
+     * @param channelIds
+     * @param searchTerm
+     * @return a list of all video search results.
+     */
+    private List<SearchResult> getVideoSearchResultList(final List<String> channelIds, final String searchTerm) {
+        List<SearchResult> videoSearchResults = new ArrayList<>();
+
+        for (String channelId : channelIds) {
+            logger.info("Getting search results for channel ID: [{}] and search term: [{}].", channelId, searchTerm);
+            videoSearchResults.addAll(youTubeQueryService.getVideoSearchResults(channelId, searchTerm));
+        }
+
+        return videoSearchResults;
+    }
+
+    /**
+     * Save all of the search results to the database.
+     *
+     * @param videoSearchResults
+     */
+    private void saveVideoInformation(final List<SearchResult> videoSearchResults) {
+        logger.info("Saving the video search results.");
+
+        for (SearchResult videoSearchResult : videoSearchResults) {
+            Video video = new Video();
+
+            // Ensure that the title isn't over the maximum length.
+            String videoTitle = stringManipulationService.truncateString(videoSearchResult.getSnippet().getTitle(),
+                    MAX_VIDEO_TITLE_LENGTH);
+            video.setTitle(videoTitle);
+            video.setDate(videoSearchResult.getSnippet().getPublishedAt());
+
+            videoRepository.save(video);
+        }
     }
 }

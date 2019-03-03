@@ -37,6 +37,8 @@ public class YouTubeQueryServiceImpl implements YouTubeQueryService {
 
     private static final String BASIC_VIDEO_FIELDS = "items(snippet/title, snippet/publishedAt)";
 
+    private static final Long MAXIMUM_SEARCH_RESULTS = 50L;
+
     private static final int EXPECTED_INDEX_OF_ITEMS_IN_RESULT = 0;
 
     private static final String EMPTY_STRING = "";
@@ -165,6 +167,7 @@ public class YouTubeQueryServiceImpl implements YouTubeQueryService {
         searchListRequest.setQ(searchTerm);
         searchListRequest.setType(type);
         searchListRequest.setFields(fields);
+        searchListRequest.setMaxResults(MAXIMUM_SEARCH_RESULTS);
         searchListRequest.setKey(youTubeApiKey);
 
         SearchListResponse response = searchListRequest.execute();

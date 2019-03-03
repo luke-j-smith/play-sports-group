@@ -1,16 +1,24 @@
 package com.luke_j_smith.play_sports_group.model;
 
-import java.sql.Timestamp;
+import javax.persistence.*;
+import com.google.api.client.util.DateTime;
 
 /**
  * Video Domain Object.
  */
+@Entity
+@Table(name = "videos")
 public class Video {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private int id;
 
+    @Column(name = "title", length = 100)
     private String title;
 
-    private Timestamp date;
+    @Column(name = "date")
+    private DateTime date;
 
     public int getId() {
         return id;
@@ -28,11 +36,11 @@ public class Video {
         this.title = title;
     }
 
-    public Timestamp getDate() {
+    public DateTime getDate() {
         return date;
     }
 
-    public void setDate(Timestamp date) {
+    public void setDate(DateTime date) {
         this.date = date;
     }
 
