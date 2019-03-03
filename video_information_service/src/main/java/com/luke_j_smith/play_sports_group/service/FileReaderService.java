@@ -13,7 +13,7 @@ public interface FileReaderService {
      * @param fileInResources
      * @return the file at the specified location
      */
-    public File getFileFromResources(String fileInResources);
+    public File getFileFromResources(final String fileInResources);
 
     /**
      * Get the contents of a file on a line by line basis given a File.
@@ -21,7 +21,7 @@ public interface FileReaderService {
      * @param file
      * @return each line of the file as a string
      */
-    public List<String> getFileContentsLineByLine(File file);
+    public List<String> getFileContentsLineByLine(final File file);
 
     /**
      * Get the contents of a file on a line by line basis given a location in resources.
@@ -29,5 +29,5 @@ public interface FileReaderService {
      * @param fileInResources
      * @return each line of the file as a string
      */
-    public List<String> getFileContentsLineByLine(String fileInResources);
+    public List<String> getFileContentsLineByLine(final String fileInResources);
 }

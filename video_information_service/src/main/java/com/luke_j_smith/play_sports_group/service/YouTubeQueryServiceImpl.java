@@ -4,6 +4,8 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.youtube.model.SearchListResponse;
+import com.google.api.services.youtube.model.SearchResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.api.services.youtube.YouTube;
@@ -26,6 +28,12 @@ public class YouTubeQueryServiceImpl implements YouTubeQueryService {
 
     private static final String QUERY_PART_ID = "id";
 
+    private static final String QUERY_PART_SNIPPET = "snippet";
+
+    private static final String VIDEO_SEARCH_TYPE = "video";
+
+    private static final String BASIC_VIDEO_FIELDS = "items(snippet/title, snippet/publishedAt)";
+
     private static final int EXPECTED_INDEX_OF_ITEMS_IN_RESULT = 0;
 
     private static final String EMPTY_STRING = "";
@@ -33,7 +41,7 @@ public class YouTubeQueryServiceImpl implements YouTubeQueryService {
     private static YouTube youTube;
 
     @Override
-    public List<String> getChannelIds(List<String> channelNames) {
+    public List<String> getChannelIds(final List<String> channelNames) {
         logger.info("Getting channel ID for the following channels: [{}].", channelNames);
 
         List<String> channelIds = new ArrayList<>();
@@ -55,6 +63,29 @@ public class YouTubeQueryServiceImpl implements YouTubeQueryService {
         }
 
         return channelIds;
+    }
+
+    @Override
+    public List<SearchResult> getVideoSearchResults(final String channelId, final String searchTerm) {
+        logger.info("Getting video search results for channel ID: [{}], and search term: [{}].", channelId, searchTerm);
+
+        List<SearchResult> videoSearchResults = new ArrayList<>();
+
+        try {
+            logger.info("Ensuring that the YouTube service is initialized.");
+            initializeYouTubeService();
+        } catch (IOException e) {
+            logger.info("Unable to initialize YouTube service: [{}].", e);
+            return videoSearchResults;
+        }
+
+        try {
+            videoSearchResults = getSearchResults(channelId, searchTerm, VIDEO_SEARCH_TYPE, BASIC_VIDEO_FIELDS);
+        } catch (IOException e) {
+            logger.info("Unable to conduct search - IOException: [{}].", e);
+        }
+
+        return videoSearchResults;
     }
 
     /**
@@ -85,7 +116,7 @@ public class YouTubeQueryServiceImpl implements YouTubeQueryService {
     }
 
     /**
-     * Get the channel ID from a given channel name.
+     * Given channel name, query YouTube to find the channel ID.
      *
      * @param channelName
      * @return the channel ID
@@ -98,6 +129,7 @@ public class YouTubeQueryServiceImpl implements YouTubeQueryService {
         YouTube.Channels.List channelsListRequest = youTube.channels().list(QUERY_PART_ID);
         channelsListRequest.setForUsername(channelName);
         channelsListRequest.setKey(API_KEY);
+
         ChannelListResponse response = channelsListRequest.execute();
 
         if (response == null || response.getItems() == null || response.getItems().size() == 0) {
@@ -107,5 +139,38 @@ public class YouTubeQueryServiceImpl implements YouTubeQueryService {
         }
 
         return response.getItems().get(EXPECTED_INDEX_OF_ITEMS_IN_RESULT).getId();
+    }
+
+    /**
+     * Given a channel ID, a search term, the type of content to search and the fields we are interested in, query
+     * YouTube to find the matching search results.
+     *
+     * @param channelId
+     * @param searchTerm
+     * @param type
+     * @param fields
+     * @return a list of search results
+     * @throws IOException
+     */
+    private List<SearchResult> getSearchResults(final String channelId, final String searchTerm,
+                                                final String type, final String fields) throws IOException {
+        logger.info("Searching for videos for channel ID: [{}], search term: [{}], type: [{}], and fields: [{}].",
+                channelId, searchTerm, type);
+
+        YouTube.Search.List searchListRequest = youTube.search().list(QUERY_PART_SNIPPET);
+        searchListRequest.setChannelId(channelId);
+        searchListRequest.setQ(searchTerm);
+        searchListRequest.setType(type);
+        searchListRequest.setFields(fields);
+        searchListRequest.setKey(API_KEY);
+
+        SearchListResponse response = searchListRequest.execute();
+
+        if (response == null) {
+            logger.info("Search response is null.");
+            return new ArrayList<>();
+        }
+
+        return response.getItems();
     }
 }

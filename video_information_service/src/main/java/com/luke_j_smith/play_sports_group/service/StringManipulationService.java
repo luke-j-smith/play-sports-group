@@ -12,5 +12,13 @@ public interface StringManipulationService {
      * @param strings
      * @return the list of strings in lower case
      */
-    public List<String> getListOfStringsInLowerCase(List<String> strings);
+    public List<String> getListOfStringsInLowerCase(final List<String> strings);
+
+    /**
+     * Convert a list of strings into a single string, where each string is separated with the or symbol (i.e., '|').
+     *
+     * @param strings
+     * @return a single string with '|' separating the input strings
+     */
+    public String joinStringsWithOr(final List<String> strings);
 }
