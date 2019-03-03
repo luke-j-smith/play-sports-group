@@ -1,6 +1,6 @@
 package com.luke_j_smith.play_sports_group.service;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +21,7 @@ public class FileReaderServiceTest {
 
     private String expectedFileContents;
 
-    @Before
+    @BeforeEach
     public void setup() {
         fileReaderService = new FileReaderServiceImpl();
 
