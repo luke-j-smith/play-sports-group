@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface VideoService {
     /**
-     * Used to save a video to the database.
+     * Create - used to save a video to the database.
      *
      * @param title
      * @param date
@@ -17,14 +17,14 @@ public interface VideoService {
     public void saveVideo(final String title, final DateTime date);
 
     /**
-     * Used to get all of the videos saved in the database.
+     * Read all - used to get all of the videos saved in the database.
      *
      * @return a list of all videos in the database
      */
     public List<Video> getAllVideos();
 
     /**
-     * Get a video given an ID, where the id is the video's ID in the database.
+     * Read individual - get a video given an ID, where the id is the video's ID in the database.
      *
      * @param id
      * @return the corresponding video
