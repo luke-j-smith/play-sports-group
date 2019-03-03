@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,5 +50,18 @@ public class VideoServiceImpl implements VideoService {
         videoRepository.findAll().forEach(allVideos::add);
 
         return allVideos;
+    }
+
+    @Override
+    public Video getVideo(Integer id) {
+        logger.info("Getting video with ID: [{}].", id);
+
+        if (id == null || id < 0) {
+            logger.info("Invalid ID provided, returning null.");
+            return null;
+        }
+
+        // If the video for the specified ID doesn't exist, return null.
+        return videoRepository.findById(id).orElse(null);
     }
 }
