@@ -29,7 +29,7 @@ public class DownloadInformationServiceImpl implements DownloadInformationServic
     private static final String SEARCH_FILTER_FILE = "search-properties/search_filter";
 
     @Override
-    public void downloadVideoInformation() {
+    public boolean downloadVideoInformation() {
         String searchTerm = getSearchTerm();
         List<String> channelIds = getChannelIds();
         List<SearchResult> searchResults = new ArrayList<>();
@@ -38,6 +38,8 @@ public class DownloadInformationServiceImpl implements DownloadInformationServic
             searchResults.addAll(youTubeQueryService.getVideoSearchResults(id, searchTerm));
         }
         logger.info("Search Results: [{}]", searchResults);
+
+        return true;
     }
 
     /**

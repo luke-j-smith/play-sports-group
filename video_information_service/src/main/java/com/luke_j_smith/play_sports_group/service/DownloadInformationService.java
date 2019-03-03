@@ -6,6 +6,8 @@ package com.luke_j_smith.play_sports_group.service;
 public interface DownloadInformationService {
     /**
      * Handles downloading the required information.
+     *
+     * @return whether the download was successful
      */
-    public void downloadVideoInformation();
+    public boolean downloadVideoInformation();
 }
