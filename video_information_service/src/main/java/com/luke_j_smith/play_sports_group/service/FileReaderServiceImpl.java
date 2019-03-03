@@ -18,7 +18,7 @@ public class FileReaderServiceImpl implements FileReaderService {
     private Logger logger = LoggerFactory.getLogger(FileReaderServiceImpl.class);
 
     @Override
-    public File getFileFromResources(String fileName) {
+    public File getFileFromResources(final String fileName) {
         logger.info("Getting file from resources with name: [{}].", fileName);
 
         ClassLoader classLoader = getClass().getClassLoader();
@@ -29,7 +29,7 @@ public class FileReaderServiceImpl implements FileReaderService {
     }
 
     @Override
-    public List<String> getFileContentsLineByLine(File file) {
+    public List<String> getFileContentsLineByLine(final File file) {
         List<String> fileContents = new ArrayList<>();
 
         if (file == null || !file.canRead()) {
@@ -50,5 +50,14 @@ public class FileReaderServiceImpl implements FileReaderService {
         }
 
         return fileContents;
+    }
+
+    @Override
+    public List<String> getFileContentsLineByLine(final String fileInResources) {
+        logger.info("Getting contents of file.");
+
+        File file = getFileFromResources(fileInResources);
+
+        return getFileContentsLineByLine(file);
     }
 }

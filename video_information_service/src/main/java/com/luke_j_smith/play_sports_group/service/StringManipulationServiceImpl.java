@@ -11,7 +11,7 @@ public class StringManipulationServiceImpl implements StringManipulationService 
     private Logger logger = LoggerFactory.getLogger(StringManipulationServiceImpl.class);
 
     @Override
-    public List<String> getListOfStringsInLowerCase(List<String> strings) {
+    public List<String> getListOfStringsInLowerCase(final List<String> strings) {
         if (strings == null || strings.isEmpty()) {
             logger.info("List of strings is null or empty.");
             return strings;
@@ -20,5 +20,22 @@ public class StringManipulationServiceImpl implements StringManipulationService 
         logger.info("Converting list of strings to lowercase: [{}]", strings);
 
         return strings.stream().map(String::toLowerCase).collect(Collectors.toList());
+    }
+
+    @Override
+    public String joinStringsWithOr(final List<String> strings) {
+        logger.info("Joining strings: [{}] together with or symbol (i.e., |).", strings);
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 0; i < strings.size(); i++) {
+            stringBuilder.append(strings.get(i));
+            // We only want their to be the or symbol between the strings.
+            if (i < strings.size() - 1) {
+                stringBuilder.append("|");
+            }
+        }
+
+        return stringBuilder.toString();
     }
 }
