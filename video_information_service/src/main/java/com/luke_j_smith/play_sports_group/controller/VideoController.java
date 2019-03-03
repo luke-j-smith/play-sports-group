@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Video Controller - handles video related requests.
+ */
 @RestController
 @RequestMapping("/video")
 public class VideoController {

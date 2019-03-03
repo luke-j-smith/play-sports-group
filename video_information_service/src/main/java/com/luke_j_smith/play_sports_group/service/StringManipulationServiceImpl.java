@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of the String Manipulation Service.
+ */
 @Component
 public class StringManipulationServiceImpl implements StringManipulationService {
     private Logger logger = LoggerFactory.getLogger(StringManipulationServiceImpl.class);

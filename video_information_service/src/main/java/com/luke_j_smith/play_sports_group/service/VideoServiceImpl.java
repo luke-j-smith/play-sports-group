@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementation of the Video Service.
+ */
 @Component
 public class VideoServiceImpl implements VideoService {
     private Logger logger = LoggerFactory.getLogger(VideoServiceImpl.class);

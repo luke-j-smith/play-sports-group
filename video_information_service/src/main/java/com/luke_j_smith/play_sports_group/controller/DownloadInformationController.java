@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+/**
+ * Download Information Controller - handles download requests.
+ */
 @RestController
 @RequestMapping("/download-information")
 public class DownloadInformationController {

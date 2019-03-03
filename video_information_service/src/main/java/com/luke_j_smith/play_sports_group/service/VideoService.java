@@ -4,6 +4,9 @@ import com.google.api.client.util.DateTime;
 import com.luke_j_smith.play_sports_group.model.Video;
 import java.util.List;
 
+/**
+ * Interface for the Video Service - handles video related operations.
+ */
 public interface VideoService {
     /**
      * Used to save a video to the database.
