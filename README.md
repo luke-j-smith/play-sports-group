@@ -1,6 +1,6 @@
 # play-sports-group
 
-This repository contains a RESTful API that provides the storage, deletion and search functionality of YouTube videos.
+This repository contains a RESTful API that provides the functionality to store, delete and search basic information relating to YouTube videos.
 
 ## Requirements
 
