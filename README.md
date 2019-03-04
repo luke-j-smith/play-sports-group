@@ -25,7 +25,11 @@ docker exec -it psg-database bash
 mysql -u root -p
 ```
 
-Using the password ``rootpassword``.
+The password is: ``rootpassword``, and we are expecting to see the two empty tables ``channels`` and ``videos``.
+```
+use mydb
+show tables;
+```
 
 Once the database is running as expected, we can start the Java application using:
 ```
