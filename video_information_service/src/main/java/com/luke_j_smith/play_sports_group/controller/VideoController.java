@@ -1,5 +1,6 @@
 package com.luke_j_smith.play_sports_group.controller;
 
+import com.luke_j_smith.play_sports_group.dto.BasicVideoDTO;
 import com.luke_j_smith.play_sports_group.model.Video;
 import com.luke_j_smith.play_sports_group.service.VideoService;
 import org.slf4j.Logger;
@@ -46,7 +47,7 @@ public class VideoController {
     }
 
     @RequestMapping(value = "view", method = RequestMethod.GET)
-    public ResponseEntity<Video> getSavedVideo(@RequestParam("id") Integer id) {
+    public ResponseEntity<Video> getSavedVideo(@RequestParam("id") final Integer id) {
         logger.info("GET request to retrieve video with ID: [{}].", id);
 
         Video video = videoService.getVideo(id);
@@ -63,7 +64,7 @@ public class VideoController {
     }
 
     @RequestMapping(value = "delete", method = RequestMethod.DELETE)
-    public ResponseEntity<String> deleteVideo(@RequestParam("id") Integer id) {
+    public ResponseEntity<String> deleteVideo(@RequestParam("id") final Integer id) {
         logger.info("DELETE request to delete video with id: [{}].", id);
 
         Boolean deleteSuccessful = videoService.deleteVideo(id);
@@ -73,5 +74,22 @@ public class VideoController {
         }
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(DELETE_UNSUCCESSFUL_MESSAGE);
+    }
+
+    @RequestMapping(value = "search", method = RequestMethod.GET)
+    public ResponseEntity<List<BasicVideoDTO>> search(@RequestParam("find") final String searchTerm) {
+        logger.info("GET request to get videos where the title matches: [{}].", searchTerm);
+
+        List<BasicVideoDTO> basicVideoDTOS = videoService.getVideos(searchTerm);
+
+        if (basicVideoDTOS == null) {
+            logger.info("VideoService returned null unexpectedly, returning an empty list instead.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, JSON_RESPONSE_HEADER);
+
+        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(basicVideoDTOS);
     }
 }
