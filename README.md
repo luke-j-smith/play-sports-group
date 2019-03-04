@@ -1,6 +1,6 @@
 # play-sports-group
 
-This repository contains a RESTful API that provides the storage, deletion and search functionality of YouTube videos.
+This repository contains a RESTful API that provides the functionality to store, delete and search basic information relating to YouTube videos.
 
 ## Requirements
 
@@ -25,7 +25,11 @@ docker exec -it psg-database bash
 mysql -u root -p
 ```
 
-Using the password ``rootpassword``.
+The password is: ``rootpassword``, and we are expecting to see the two empty tables ``channels`` and ``videos``.
+```
+use mydb
+show tables;
+```
 
 Once the database is running as expected, we can start the Java application using:
 ```
