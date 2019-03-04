@@ -48,10 +48,10 @@ public class DownloadInformationServiceImpl implements DownloadInformationServic
         saveChannelInformation(channelNames);
         // and and query the YouTube API to find their IDs.
         List<String> channelIds = getChannelIds(channelNames);
-        // Then we combine all our search terms, so they can be used in a single query.
-        String searchTerm = getSearchTerm();
-        // Using the channel IDs and the combined search term, we find the matching videos.
-        List<SearchResult> searchResults = getVideoSearchResultList(channelIds, searchTerm);
+        // Then we get all of the search terms, ...
+        List<String> searchTerms = getSearchTerms();
+        // and using the channel IDs and those terms, we find the matching videos.
+        List<SearchResult> searchResults = getVideoSearchResultList(channelIds, searchTerms);
         // Finally we save that information to the database.
         saveAllVideoInformation(searchResults);
 
@@ -97,17 +97,47 @@ public class DownloadInformationServiceImpl implements DownloadInformationServic
     }
 
     /**
+     * Get all of the search terms specified in the search_filter file.
+     *
+     * @return a list of search terms
+     */
+    private List<String> getSearchTerms() {
+        logger.info("Getting the search terms specified in the file.");
+
+        return fileReaderService.getFileContentsLineByLine(searchFilterFile);
+    }
+
+    /**
      * Rather than searching for videos matching each term individually, we create a single search term that joins all
      * of the terms together in the format: 'luke smith|cycling|road'.
      *
      * @return a combined search term
      */
-    private String getSearchTerm() {
-        logger.info("Getting the search terms specified in the file.");
+    private String getCombinedSearchTerm() {
+        logger.info("Getting the combined search term from those specified in the file.");
 
-        List<String> searchTerms = fileReaderService.getFileContentsLineByLine(searchFilterFile);
+        List<String> searchTerms = getSearchTerms();
 
         return stringManipulationService.joinStringsWithOr(searchTerms);
+    }
+
+    /**
+     * Given all the channel IDs and all the search terms, get all the matching results.
+     *
+     * @param channelIds
+     * @param searchTerms
+     * @return a list of all video search results
+     */
+    private List<SearchResult> getVideoSearchResultList(final List<String> channelIds, final List<String> searchTerms) {
+        logger.info("Getting all video results for all channel IDs and all search terms.");
+
+        List<SearchResult> allVideoSearchResults = new ArrayList<>();
+
+        for (String searchTerm : searchTerms) {
+            allVideoSearchResults.addAll(getVideoSearchResultList(channelIds, searchTerm));
+        }
+
+        return allVideoSearchResults;
     }
 
     /**
@@ -115,7 +145,7 @@ public class DownloadInformationServiceImpl implements DownloadInformationServic
      *
      * @param channelIds
      * @param searchTerm
-     * @return a list of all video search results.
+     * @return a list of all video search results
      */
     private List<SearchResult> getVideoSearchResultList(final List<String> channelIds, final String searchTerm) {
         List<SearchResult> videoSearchResults = new ArrayList<>();
