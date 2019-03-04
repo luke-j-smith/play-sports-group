@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,7 +37,7 @@ public class VideoServiceImpl implements VideoService {
 
         // Ensure that the title isn't over the maximum length.
         video.setTitle(stringManipulationService.truncateString(title, MAX_VIDEO_TITLE_LENGTH));
-        video.setDate(date);
+        video.setDate(Timestamp.from(Instant.ofEpochMilli(date.getValue())));
 
         videoRepository.save(video);
     }
