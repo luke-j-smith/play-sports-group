@@ -26,6 +26,7 @@ public class YouTubeQueryServiceImpl implements YouTubeQueryService {
     @Value("${application.name}")
     private String applicationName;
 
+    // Each query to the YouTube API must provide a key.
     @Value("${youtube.api.key}")
     private String youTubeApiKey;
 
@@ -35,10 +36,13 @@ public class YouTubeQueryServiceImpl implements YouTubeQueryService {
 
     private static final String VIDEO_SEARCH_TYPE = "video";
 
+    // We are only interested in the video 'title' and 'publishedAt' date, so can ignore everything else.
     private static final String BASIC_VIDEO_FIELDS = "items(snippet/title, snippet/publishedAt)";
 
+    // Each query to the YouTube API has a maximum of 50 results, we use 50 as we want as much information as possible.
     private static final Long MAXIMUM_SEARCH_RESULTS = 50L;
 
+    // The response to the channel query will contain 'items' which is an array, we are interested in the first element.
     private static final int EXPECTED_INDEX_OF_ITEMS_IN_RESULT = 0;
 
     private static final String EMPTY_STRING = "";
