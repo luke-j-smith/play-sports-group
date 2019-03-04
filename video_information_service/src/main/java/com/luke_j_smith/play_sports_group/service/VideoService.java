@@ -1,6 +1,7 @@
 package com.luke_j_smith.play_sports_group.service;
 
 import com.google.api.client.util.DateTime;
+import com.luke_j_smith.play_sports_group.dto.BasicVideoDTO;
 import com.luke_j_smith.play_sports_group.model.Video;
 import java.util.List;
 
@@ -38,4 +39,12 @@ public interface VideoService {
      * @return whether the delete was successful
      */
     public Boolean deleteVideo(final Integer id);
+
+    /**
+     * Read specific - used to get a list of videos where the title matches a search term.
+     *
+     * @param searchTerm
+     * @return a list of videos that match the search term
+     */
+    public List<BasicVideoDTO> getVideos(final String searchTerm);
 }

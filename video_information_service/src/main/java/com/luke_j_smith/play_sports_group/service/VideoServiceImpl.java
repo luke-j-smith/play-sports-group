@@ -2,15 +2,15 @@ package com.luke_j_smith.play_sports_group.service;
 
 import com.google.api.client.util.DateTime;
 import com.luke_j_smith.play_sports_group.dao.VideoRepository;
+import com.luke_j_smith.play_sports_group.dto.BasicVideoDTO;
 import com.luke_j_smith.play_sports_group.model.Video;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import javax.persistence.criteria.CriteriaBuilder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the Video Service.
@@ -77,5 +77,42 @@ public class VideoServiceImpl implements VideoService {
         videoRepository.deleteById(id);
 
         return true;
+    }
+
+    @Override
+    public List<BasicVideoDTO> getVideos(String searchTerm) {
+        // As the search is case insensitive, we first transform the search term to lower case.
+        String lowerCaseSearchTerm = searchTerm.toLowerCase();
+
+        logger.info("Getting basic information for all videos that title matches: [{}].", lowerCaseSearchTerm);
+
+        // Then we get all of the videos in the database, ...
+        List<Video> allVideos = getAllVideos();
+        // and filter them using their titles and the search term.
+        List<Video> matchingVideos = allVideos.stream().filter(video ->
+            video.getTitle().toLowerCase().contains(lowerCaseSearchTerm)
+        ).collect(Collectors.toList());
+
+        // We are only interested in the video ID and title, so return a list of BasicVideoDTOs.
+        return getBasicVideoDTOsFromVideos(matchingVideos);
+    }
+
+    /**
+     * Transform a list of Videos into a list of BasicVideoDTOs.
+     *
+     * @param videos
+     * @return a list of BasicVideoDTOs
+     */
+    private List<BasicVideoDTO> getBasicVideoDTOsFromVideos(final List<Video> videos) {
+        logger.info("Transforming Videos into BasicVideoDTOs");
+
+        List<BasicVideoDTO> basicVideoDTOS = new ArrayList<>();
+
+        for (Video video : videos) {
+            BasicVideoDTO basicVideoDTO = new BasicVideoDTO(video.getId(), video.getTitle());
+            basicVideoDTOS.add(basicVideoDTO);
+        }
+
+        return basicVideoDTOS;
     }
 }
