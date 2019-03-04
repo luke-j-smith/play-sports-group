@@ -1,8 +1,7 @@
 package com.luke_j_smith.play_sports_group.model;
 
 import javax.persistence.*;
-import com.google.api.client.util.DateTime;
-
+import java.sql.Timestamp;
 /**
  * Video Domain Object.
  */
@@ -18,7 +17,7 @@ public class Video {
     private String title;
 
     @Column(name = "date")
-    private DateTime date;
+    private Timestamp date;
 
     public int getId() {
         return id;
@@ -36,11 +35,11 @@ public class Video {
         this.title = title;
     }
 
-    public DateTime getDate() {
+    public Timestamp getDate() {
         return date;
     }
 
-    public void setDate(DateTime date) {
+    public void setDate(Timestamp date) {
         this.date = date;
     }
 
